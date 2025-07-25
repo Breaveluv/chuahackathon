@@ -70,16 +70,7 @@ void addNode( ) {
     printf("Them thanh cong");
 
 }
-void updateTask() {
-int idFind;
-    Node *temp = head;
-    printf("Nhap phan tu muon thay doi thong tin");
-    scanf("%d", &idFind);
-   while (temp && temp->.id != idFind) {
-       temp = temp->next;
-   }
 
-}
 void deleteTask() {
     int idDelete;
     printf("Nhap id nhiem vu");
@@ -115,6 +106,109 @@ void displayTask() {
         temp = temp->next;
     }
 }
+
+void updateTask() {
+    int id;
+    printf("Nhập ID nhiệm vụ cần cập nhật: ");
+    scanf("%d", &id);
+
+    Node *temp = head;
+    while (temp != NULL && temp->id != id) {
+        temp = temp->next;
+    }
+
+    if (temp == NULL) {
+        printf("❌ Không tìm thấy nhiệm vụ.\n");
+        return;
+    }
+
+    char newTitle[MAX], newDeadline[MAX];
+    int newPriority;
+
+    printf("Nhập tiêu đề mới: ");
+    while (getchar() != '\n');
+    fgets(newTitle, MAX, stdin);
+    newTitle[strcspn(newTitle, "\n")] = '\0';
+
+    printf("Nhập ưu tiên mới: ");
+    scanf("%d", &newPriority);
+
+    printf("Nhập deadline mới: ");
+    while (getchar() != '\n');
+    fgets(newDeadline, MAX, stdin);
+    newDeadline[strcspn(newDeadline, "\n")] = '\0';
+
+    strcpy(temp->title, newTitle);
+    temp->priority = newPriority;
+    strcpy(temp->deadline, newDeadline);
+
+    printf("🔄 Cập nhật thành công.\n");
+}
+
+void markCompleted() {
+    int id;
+    printf("Nhập ID nhiệm vụ đã hoàn thành: ");
+    scanf("%d", &id);
+
+    Node *temp = head;
+    while (temp && temp->id != id) {
+        temp = temp->next;
+    }
+
+    if (temp) {
+        temp->isCompleted = 1;
+        printf("🎉 Nhiệm vụ đã được đánh dấu là hoàn thành.\n");
+    } else {
+        printf("❌ Không tìm thấy nhiệm vụ.\n");
+    }
+}
+
+void sortTasksByPriority() {
+    if (!head || !head->next) return;
+
+    Node *i, *j;
+    for (i = head; i != NULL; i = i->next) {
+        for (j = i->next; j != NULL; j = j->next) {
+            if (i->priority < j->priority) {
+                // Hoán đổi toàn bộ nội dung
+                Node temp = *i;
+                *i = *j;
+                *j = temp;
+
+                // Khôi phục liên kết
+                Node *swap = i->next;
+                i->next = j->next;
+                j->next = swap;
+            }
+        }
+    }
+    printf("📊 Danh sách đã được sắp xếp theo mức độ ưu tiên giảm dần.\n");
+}
+
+void searchByTitle() {
+    char keyword[MAX];
+    printf("Nhập từ khóa tìm kiếm: ");
+    while (getchar() != '\n');
+    fgets(keyword, MAX, stdin);
+    keyword[strcspn(keyword, "\n")] = '\0';
+
+    Node *temp = head;
+    int found = 0;
+    while (temp) {
+        if (strstr(temp->title, keyword)) {
+            printf("🔍 ID: %d | Tiêu đề: %s | Ưu tiên: %d | Deadline: %s | %s\n",
+                   temp->id, temp->title, temp->priority, temp->deadline,
+                   temp->isCompleted ? "✅" : "❌");
+            found = 1;
+        }
+        temp = temp->next;
+    }
+
+    if (!found) {
+        printf("Không tìm thấy nhiệm vụ nào khớp với từ khóa.\n");
+    }
+}
+
 int main () {
     int choice;
     Node *head = NULL;
